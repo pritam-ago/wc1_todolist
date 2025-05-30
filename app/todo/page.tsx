@@ -1,240 +1,227 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useEffect } from "react"
-import Link from "next/link"
-import { Plus, Check, Trash2, ArrowLeft } from "lucide-react"
+import { useAuth } from "@/lib/auth"
+import { taskApi } from "@/lib/api"
+import { useRouter } from "next/navigation"
+import { Plus, LogOut } from "lucide-react"
 
 interface Task {
-  id: number
-  text: string
-  completed: boolean
-  createdAt: Date
+  id: string
+  title: string
+  description: string
+  status: string
+  created_at: string
+  updated_at: string
 }
 
 export default function TodoPage() {
-  const [tasks, setTasks] = useState<Task[]>(() => {
-    if (typeof window !== "undefined") {
-      const savedTasks = localStorage.getItem("tasks")
-      if (savedTasks) {
-        try {
-          // Parse dates properly from localStorage
-          const parsedTasks = JSON.parse(savedTasks)
-          return parsedTasks.map((task: any) => ({
-            ...task,
-            createdAt: new Date(task.createdAt),
-          }))
-        } catch (error) {
-          console.error("Error parsing tasks from localStorage:", error)
-          return []
-        }
-      }
-    }
-    return []
-  })
+  const [tasks, setTasks] = useState<Task[]>([])
   const [newTask, setNewTask] = useState("")
-  const [filter, setFilter] = useState<"all" | "active" | "completed">("all")
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState("")
+  const { logout, isAuthenticated, token } = useAuth()
+  const router = useRouter()
 
-  // Save tasks to localStorage whenever they change
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("tasks", JSON.stringify(tasks))
+    console.log('Todo page mounted, auth state:', { isAuthenticated, token })
+    if (isAuthenticated) {
+      fetchTasks()
+    } else {
+      setIsLoading(false)
+      router.push("/")
     }
-  }, [tasks])
+  }, [isAuthenticated, token])
 
-  const addTask = (e: React.FormEvent) => {
+  const fetchTasks = async () => {
+    try {
+      console.log('Fetching tasks...')
+      setIsLoading(true)
+      setError("")
+      const data = await taskApi.getAll()
+      console.log('Tasks fetched:', data)
+      setTasks(data || []) // Ensure we always set an array
+    } catch (err) {
+      console.error('Error fetching tasks:', err)
+      setError(err instanceof Error ? err.message : "Failed to fetch tasks")
+      setTasks([]) // Reset tasks to empty array on error
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleAddTask = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (newTask.trim()) {
-      const task: Task = {
-        id: Date.now(),
-        text: newTask.trim(),
-        completed: false,
-        createdAt: new Date(),
-      }
-      setTasks((prev) => [task, ...prev])
+    if (!newTask.trim() || isSubmitting) {
+      console.log('Task submission prevented:', { 
+        isEmpty: !newTask.trim(), 
+        isSubmitting 
+      })
+      return
+    }
+
+    try {
+      console.log('Starting to add new task:', { title: newTask })
+      setIsSubmitting(true)
+      setError("")
+      
+      const task = await taskApi.create({ title: newTask })
+      console.log('Task added successfully:', task)
+      
+      setTasks(prevTasks => {
+        const updatedTasks = [task, ...(prevTasks || [])]
+        console.log('Updated tasks state:', updatedTasks)
+        return updatedTasks
+      })
+      
       setNewTask("")
+    } catch (err) {
+      console.error('Error adding task:', err)
+      const errorMessage = err instanceof Error ? err.message : "Failed to add task"
+      console.error('Setting error message:', errorMessage)
+      setError(errorMessage)
+    } finally {
+      console.log('Task submission completed')
+      setIsSubmitting(false)
     }
   }
 
-  const toggleTask = (id: number) => {
-    setTasks((prev) => prev.map((task) => (task.id === id ? { ...task, completed: !task.completed } : task)))
-  }
-
-  const deleteTask = (id: number) => {
-    setTasks((prev) => prev.filter((task) => task.id !== id))
-  }
-
-  const filteredTasks = tasks.filter((task) => {
-    if (filter === "active") return !task.completed
-    if (filter === "completed") return task.completed
-    return true
-  })
-
-  const completedCount = tasks.filter((task) => task.completed).length
-  const activeCount = tasks.filter((task) => !task.completed).length
-
-  const clearAllTasks = () => {
-    if (confirm("Are you sure you want to delete all tasks?")) {
-      setTasks([])
+  const handleDeleteTask = async (id: string) => {
+    try {
+      console.log('Deleting task:', id)
+      setError("")
+      await taskApi.delete(id)
+      console.log('Task deleted:', id)
+      setTasks(prevTasks => (prevTasks || []).filter(task => task.id !== id))
+    } catch (err) {
+      console.error('Error deleting task:', err)
+      setError(err instanceof Error ? err.message : "Failed to delete task")
     }
+  }
+
+  const handleUpdateStatus = async (id: string, currentStatus: string) => {
+    const newStatus = currentStatus === "completed" ? "pending" : "completed"
+    try {
+      console.log('Updating task status:', { id, newStatus })
+      setError("")
+      const updatedTask = await taskApi.update(id, { status: newStatus })
+      console.log('Task updated:', updatedTask)
+      setTasks(prevTasks => (prevTasks || []).map(task => task.id === id ? updatedTask : task))
+    } catch (err) {
+      console.error('Error updating task:', err)
+      setError(err instanceof Error ? err.message : "Failed to update task")
+    }
+  }
+
+  const handleLogout = () => {
+    console.log('Logging out...')
+    logout()
+    router.push("/")
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return null // Let the useEffect handle the redirect
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
-            </Link>
-            <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              TaskFlow
-            </div>
-            <Link href="/signup" className="text-blue-600 hover:text-blue-700 font-semibold">
-              Sign Up
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-6 py-8 max-w-2xl">
-        {/* Title */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">My Tasks</h1>
-          <p className="text-gray-600">Stay organized and productive</p>
+      <div className="max-w-4xl mx-auto p-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            My Tasks
+          </h1>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <LogOut className="h-5 w-5" />
+            Logout
+          </button>
         </div>
 
-        {/* Add Task Form */}
-        <form onSubmit={addTask} className="mb-8">
-          <div className="flex gap-3">
-            <div className="flex-1 relative">
-              <input
-                type="text"
-                value={newTask}
-                onChange={(e) => setNewTask(e.target.value)}
-                placeholder="Add a new task..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-lg"
-              />
-            </div>
+        <form onSubmit={handleAddTask} className="mb-8">
+          <div className="flex gap-4">
+            <input
+              type="text"
+              value={newTask}
+              onChange={(e) => setNewTask(e.target.value)}
+              placeholder="Add a new task..."
+              className="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              disabled={isSubmitting}
+            />
             <button
               type="submit"
-              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center"
+              disabled={isSubmitting || !newTask.trim()}
+              className={`flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium transition-all duration-200 ${
+                isSubmitting || !newTask.trim()
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:shadow-lg transform hover:scale-105"
+              }`}
             >
-              <Plus className="h-5 w-5 mr-2" />
-              Add
+              <Plus className="h-5 w-5" />
+              {isSubmitting ? "Adding..." : "Add Task"}
             </button>
           </div>
         </form>
 
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
-          <div className="bg-white rounded-lg p-4 text-center shadow-sm">
-            <div className="text-2xl font-bold text-gray-900">{tasks.length}</div>
-            <div className="text-sm text-gray-600">Total</div>
+        {error && (
+          <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
+            {error}
           </div>
-          <div className="bg-white rounded-lg p-4 text-center shadow-sm">
-            <div className="text-2xl font-bold text-blue-600">{activeCount}</div>
-            <div className="text-sm text-gray-600">Active</div>
-          </div>
-          <div className="bg-white rounded-lg p-4 text-center shadow-sm">
-            <div className="text-2xl font-bold text-green-600">{completedCount}</div>
-            <div className="text-sm text-gray-600">Completed</div>
-          </div>
-        </div>
+        )}
 
-        {/* Filter Buttons */}
-        <div className="flex justify-center mb-8">
-          <div className="bg-white rounded-lg p-1 shadow-sm">
-            {(["all", "active", "completed"] as const).map((filterType) => (
-              <button
-                key={filterType}
-                onClick={() => setFilter(filterType)}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                  filter === filterType ? "bg-blue-600 text-white shadow-sm" : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
-                {filterType.charAt(0).toUpperCase() + filterType.slice(1)}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Tasks List */}
-        <div className="space-y-3">
-          {filteredTasks.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="text-gray-400 text-lg mb-2">
-                {filter === "all" ? "No tasks yet" : `No ${filter} tasks`}
-              </div>
-              <div className="text-gray-500 text-sm">
-                {filter === "all" ? "Add your first task above!" : `Switch to "All" to see other tasks`}
-              </div>
+        <div className="space-y-4">
+          {!tasks || tasks.length === 0 ? (
+            <div className="text-center py-12 bg-white rounded-xl shadow-md">
+              <p className="text-gray-500">No tasks yet. Add your first task above!</p>
             </div>
           ) : (
-            filteredTasks.map((task, index) => (
+            tasks.map((task) => (
               <div
                 key={task.id}
-                className="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200 animate-fade-in"
-                style={{ animationDelay: `${index * 50}ms` }}
+                className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow"
               >
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => toggleTask(task.id)}
-                    className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
-                      task.completed
-                        ? "bg-green-500 border-green-500 text-white"
-                        : "border-gray-300 hover:border-green-400"
-                    }`}
-                  >
-                    {task.completed && <Check className="h-4 w-4" />}
-                  </button>
+                <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <div
-                      className={`text-lg transition-all duration-200 ${
-                        task.completed ? "text-gray-500 line-through" : "text-gray-900"
+                    <h3 className={`text-lg font-medium ${task.status === "completed" ? "line-through text-gray-500" : "text-gray-900"}`}>
+                      {task.title}
+                    </h3>
+                    {task.description && (
+                      <p className="mt-2 text-gray-600">{task.description}</p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-4 ml-4">
+                    <button
+                      onClick={() => handleUpdateStatus(task.id, task.status)}
+                      className={`px-4 py-2 rounded-lg font-medium ${
+                        task.status === "completed"
+                          ? "bg-green-100 text-green-700 hover:bg-green-200"
+                          : "bg-blue-100 text-blue-700 hover:bg-blue-200"
                       }`}
                     >
-                      {task.text}
-                    </div>
-                    <div className="text-sm text-gray-400">{task.createdAt.toLocaleDateString()}</div>
+                      {task.status === "completed" ? "Completed" : "Mark Complete"}
+                    </button>
+                    <button
+                      onClick={() => handleDeleteTask(task.id)}
+                      className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      Delete
+                    </button>
                   </div>
-                  <button
-                    onClick={() => deleteTask(task.id)}
-                    className="flex-shrink-0 p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
                 </div>
               </div>
             ))
           )}
         </div>
-
-        {/* Clear Completed Button */}
-        {completedCount > 0 && (
-          <div className="text-center mt-8">
-            <button
-              onClick={() => setTasks((prev) => prev.filter((task) => !task.completed))}
-              className="text-red-600 hover:text-red-700 font-medium transition-colors"
-            >
-              Clear {completedCount} completed task{completedCount !== 1 ? "s" : ""}
-            </button>
-          </div>
-        )}
-
-        {tasks.length > 0 && (
-          <div className="text-center mt-4">
-            <button
-              onClick={clearAllTasks}
-              className="text-gray-500 hover:text-gray-700 font-medium transition-colors text-sm"
-            >
-              Clear all tasks
-            </button>
-          </div>
-        )}
       </div>
     </div>
   )

@@ -10,8 +10,14 @@ export const metadata: Metadata = {
   description: "A beautiful and intuitive task management app built with Next.js and Tailwind CSS",
   keywords: "todo, task management, productivity, next.js, tailwind css",
   authors: [{ name: "TaskFlow Team" }],
-  viewport: "width=device-width, initial-scale=1",
-    generator: 'v0.dev'
+  generator: 'v0.dev'
+}
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 }
 
 export default function RootLayout({
@@ -21,7 +27,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body>{children}</body>
     </html>
   )
 }

@@ -6,12 +6,12 @@ import { useAuth } from "@/lib/auth"
 import { useRouter } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 
-export default function SignupPage() {
+export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const { signup } = useAuth()
+  const { login } = useAuth()
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,11 +20,12 @@ export default function SignupPage() {
     setIsLoading(true)
 
     try {
-      const success = await signup(email, password)
+      const success = await login(email, password)
       if (success) {
+        // Use router.push for client-side navigation
         router.push("/todo")
       } else {
-        setError("Email already exists")
+        setError("Invalid credentials")
       }
     } catch (err) {
       setError("An error occurred. Please try again.")
@@ -38,9 +39,12 @@ export default function SignupPage() {
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-2xl shadow-xl">
         <div className="text-center">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Sign Up
+            Login
           </h1>
-          <p className="mt-2 text-gray-600">Create your TaskFlow account</p>
+          <p className="mt-2 text-gray-600">Welcome back to TaskFlow</p>
+          <p className="mt-2 text-sm text-gray-500">
+            Test credentials: test@test.com / test123
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -86,19 +90,19 @@ export default function SignupPage() {
             {isLoading ? (
               <div className="flex items-center justify-center">
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                Creating Account...
+                Logging in...
               </div>
             ) : (
-              "Sign Up"
+              "Login"
             )}
           </button>
         </form>
 
         <div className="text-center space-y-4">
           <p className="text-gray-600">
-            Already have an account?{" "}
-            <Link href="/login" className="text-blue-600 hover:text-blue-700 font-medium">
-              Login
+            Don't have an account?{" "}
+            <Link href="/signup" className="text-blue-600 hover:text-blue-700 font-medium">
+              Sign up
             </Link>
           </p>
           <Link
@@ -112,4 +116,4 @@ export default function SignupPage() {
       </div>
     </div>
   )
-}
+} 
