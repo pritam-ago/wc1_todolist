@@ -53,7 +53,7 @@ func main() {
 		// Task routes
 		protected.POST("/tasks", api.CreateTask)
 		protected.GET("/tasks", api.GetTasks)
-		protected.PUT("/tasks/:id", api.UpdateTask)
+		protected.PATCH("/tasks/:id", api.UpdateTask)
 		protected.DELETE("/tasks/:id", api.DeleteTask)
 	}
 

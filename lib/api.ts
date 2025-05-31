@@ -49,7 +49,7 @@ export const taskApi = {
   }),
 
   update: (id: string, data: { title?: string; status?: string }) => fetchWithAuth(`/tasks/${id}`, {
-    method: "PUT",
+    method: "PATCH",
     body: JSON.stringify(data),
   }),
 
