@@ -150,14 +150,14 @@ export default function TodoPage() {
 
         <form onSubmit={handleAddTask} className="mb-8">
           <div className="flex gap-4">
-            <input
-              type="text"
-              value={newTask}
-              onChange={(e) => setNewTask(e.target.value)}
-              placeholder="Add a new task..."
+              <input
+                type="text"
+                value={newTask}
+                onChange={(e) => setNewTask(e.target.value)}
+                placeholder="Add a new task..."
               className="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               disabled={isSubmitting}
-            />
+              />
             <button
               type="submit"
               disabled={isSubmitting || !newTask.trim()}
@@ -198,7 +198,7 @@ export default function TodoPage() {
                     {task.description && (
                       <p className="mt-2 text-gray-600">{task.description}</p>
                     )}
-                  </div>
+                    </div>
                   <div className="flex items-center gap-4 ml-4">
                     <button
                       onClick={() => handleUpdateStatus(task.id, task.status)}

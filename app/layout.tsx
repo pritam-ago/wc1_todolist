@@ -9,8 +9,7 @@ export const metadata: Metadata = {
   title: "TaskFlow - Modern Task Management",
   description: "A beautiful and intuitive task management app built with Next.js and Tailwind CSS",
   keywords: "todo, task management, productivity, next.js, tailwind css",
-  authors: [{ name: "TaskFlow Team" }],
-  generator: 'v0.dev'
+  authors: [{ name: "TaskFlow Team" }]
 }
 
 export const viewport = {

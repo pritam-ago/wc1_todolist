@@ -65,3 +65,4 @@ func createTables() {
 		log.Fatal("Error creating tasks table:", err)
 	}
 }
+ 
