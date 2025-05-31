@@ -56,11 +56,12 @@ export default function HomePage() {
       newTask, 
       isSubmitting
     })
-
+ 
     if (isSubmitting) {
       console.log('Task submission prevented: already submitting')
       return
     }
+    
 
     try {
       console.log('Starting to add new task:', { title: newTask })
