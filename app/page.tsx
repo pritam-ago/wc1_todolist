@@ -145,32 +145,32 @@ export default function HomePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-400"></div>
       </div>
     )
   }
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 flex items-center justify-center p-4">
         <div className="max-w-md w-full mx-auto p-4 sm:p-8">
           <div className="text-center mb-6 sm:mb-8">
-            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-              Welcome to TaskFlow
+            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent mb-4">
+              Welcome to Thunder Do
             </h1>
-            <p className="text-sm sm:text-base text-gray-600">Your personal task management solution</p>
+            <p className="text-sm sm:text-base text-gray-300">Your personal task management solution</p>
           </div>
           <div className="space-y-4">
             <button
               onClick={handleLogin}
-              className="block w-full px-6 py-3 text-center text-sm sm:text-base bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+              className="block w-full px-6 py-3 text-center text-sm sm:text-base bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg font-medium hover:shadow-lg hover:shadow-indigo-500/25 transform hover:scale-105 transition-all duration-200"
             >
               Login
             </button>
             <button
               onClick={handleSignup}
-              className="block w-full px-6 py-3 text-center text-sm sm:text-base bg-white text-gray-700 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-all duration-200"
+              className="block w-full px-6 py-3 text-center text-sm sm:text-base bg-slate-800 text-gray-200 border border-slate-700 rounded-lg font-medium hover:bg-slate-700 transition-all duration-200"
             >
               Sign Up
             </button>
@@ -181,15 +181,15 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900">
       <div className="max-w-4xl mx-auto p-4 sm:p-8">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 sm:mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
             My Tasks
           </h1>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 text-gray-300 hover:text-white transition-colors"
           >
             <LogOut className="h-5 w-5" />
             Logout
@@ -206,16 +206,16 @@ export default function HomePage() {
                 setNewTask(e.target.value)
               }}
               placeholder="Add a new task..."
-              className="flex-1 px-4 py-2 text-sm sm:text-base rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="flex-1 px-4 py-2 text-sm sm:text-base rounded-lg border border-slate-700 bg-slate-800 text-gray-200 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               disabled={isSubmitting}
             />
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`flex items-center justify-center gap-2 px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium transition-all duration-200 ${
+              className={`flex items-center justify-center gap-2 px-6 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg font-medium transition-all duration-200 ${
                 isSubmitting
                   ? "opacity-50 cursor-not-allowed"
-                  : "hover:shadow-lg transform hover:scale-105"
+                  : "hover:shadow-lg hover:shadow-indigo-500/25 transform hover:scale-105"
               }`}
             >
               <Plus className="h-5 w-5" />
@@ -225,29 +225,29 @@ export default function HomePage() {
         </form>
 
         {error && (
-          <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg text-sm sm:text-base">
+          <div className="mb-4 p-4 bg-red-900/50 text-red-200 rounded-lg text-sm sm:text-base">
             {error}
           </div>
         )}
 
         <div className="space-y-4">
           {!tasks || tasks.length === 0 ? (
-            <div className="text-center py-8 sm:py-12 bg-white rounded-xl shadow-md">
-              <p className="text-sm sm:text-base text-gray-500">No tasks yet. Add your first task above!</p>
+            <div className="text-center py-8 sm:py-12 bg-slate-800/50 rounded-xl shadow-md">
+              <p className="text-sm sm:text-base text-gray-400">No tasks yet. Add your first task above!</p>
             </div>
           ) : (
             tasks.map((task) => (
               <div
                 key={task.id}
-                className="bg-white p-4 sm:p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow"
+                className="bg-slate-800/50 p-4 sm:p-6 rounded-xl shadow-md hover:shadow-lg hover:shadow-indigo-500/10 transition-shadow"
               >
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                   <div className="flex-1">
-                    <h3 className={`text-base sm:text-lg font-medium ${task.status === "completed" ? "line-through text-gray-500" : "text-gray-900"}`}>
+                    <h3 className={`text-base sm:text-lg font-medium ${task.status === "completed" ? "line-through text-gray-500" : "text-gray-200"}`}>
                       {task.title}
                     </h3>
                     {task.description && (
-                      <p className="mt-2 text-sm sm:text-base text-gray-600">{task.description}</p>
+                      <p className="mt-2 text-sm sm:text-base text-gray-400">{task.description}</p>
                     )}
                   </div>
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
@@ -255,15 +255,15 @@ export default function HomePage() {
                       onClick={() => handleUpdateStatus(task.id, task.status)}
                       className={`px-4 py-2 text-sm sm:text-base rounded-lg font-medium ${
                         task.status === "completed"
-                          ? "bg-green-100 text-green-700 hover:bg-green-200"
-                          : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                          ? "bg-emerald-900/50 text-emerald-300 hover:bg-emerald-900/70"
+                          : "bg-indigo-900/50 text-indigo-300 hover:bg-indigo-900/70"
                       }`}
                     >
                       {task.status === "completed" ? "Completed" : "Mark Complete"}
                     </button>
                     <button
                       onClick={() => handleDeleteTask(task.id)}
-                      className="p-2 text-sm sm:text-base text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                      className="p-2 text-sm sm:text-base text-red-400 hover:text-red-300 hover:bg-red-900/30 rounded-lg transition-colors"
                     >
                       Delete
                     </button>

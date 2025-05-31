@@ -6,10 +6,10 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "TaskFlow - Modern Task Management",
-  description: "A beautiful and intuitive task management app built with Next.js and Tailwind CSS",
+  title: "Thunder Do - Modern Task Management",
+  description: "A powerful and intuitive task management app built with Next.js and Tailwind CSS",
   keywords: "todo, task management, productivity, next.js, tailwind css",
-  authors: [{ name: "TaskFlow Team" }]
+  authors: [{ name: "Thunder Do Team" }]
 }
 
 export const viewport = {
@@ -26,7 +26,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900">{children}</body>
     </html>
   )
 }
