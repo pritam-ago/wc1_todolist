@@ -17,7 +17,7 @@ interface AuthState {
   logout: () => void
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL+'/api' || 'http://localhost:8080/api'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://13.49.18.22:8080/api'
 
 export const useAuth = create<AuthState>()(
   persist(
