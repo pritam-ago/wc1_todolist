@@ -1,6 +1,6 @@
 import { getAuth } from './auth'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api'
+const API_URL = process.env.NEXT_PUBLIC_API_URL+'/api' || 'http://localhost:8080/api'
 
 async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
   const { token } = getAuth()
