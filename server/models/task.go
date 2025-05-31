@@ -20,7 +20,7 @@ type CreateTaskRequest struct {
 }
 
 type UpdateTaskRequest struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Status      string `json:"status" binding:"oneof=pending in_progress completed"`
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	Status      *string `json:"status" binding:"oneof=pending in_progress completed"`
 }

@@ -35,19 +35,19 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
-      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-2xl shadow-xl">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md p-4 sm:p-8 space-y-6 sm:space-y-8 bg-white rounded-2xl shadow-xl">
         <div className="text-center">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Login
           </h1>
-          <p className="mt-2 text-gray-600">Welcome back to TaskFlow</p>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm sm:text-base text-gray-600">Welcome back to TaskFlow</p>
+          <p className="mt-2 text-xs sm:text-sm text-gray-500">
             Test credentials: test@test.com / test123
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email
@@ -59,7 +59,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+              className="mt-1 block w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
             />
           </div>
 
