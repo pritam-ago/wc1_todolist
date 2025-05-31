@@ -16,7 +16,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self' http: https:; connect-src 'self' http: https:;"
+            value: "upgrade-insecure-requests"
           }
         ],
       },
