@@ -42,9 +42,7 @@ export default function LoginPage() {
             Login
           </h1>
           <p className="mt-2 text-sm sm:text-base text-gray-600">Welcome back to TaskFlow</p>
-          <p className="mt-2 text-xs sm:text-sm text-gray-500">
-            Test credentials: test@test.com / test123
-          </p>
+          
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
